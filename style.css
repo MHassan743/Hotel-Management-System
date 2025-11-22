@@ -47,14 +47,14 @@ body {
 /* Role Switcher */
 .role-switcher {
     position: fixed;
-    top: 20px;
     right: 20px;
     background: white;
     padding: 10px 15px;
+    margin-right: 170px;
+    margin-top: 5px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
     border: 1px solid var(--gray-300);
-    z-index: 1001;
     max-width: 200px;
 }
 
@@ -66,7 +66,6 @@ body {
 }
 
 .role-badge {
-    padding: 4px 8px;
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: bold;
@@ -1152,4 +1151,5 @@ body.dark-mode .role-switcher {
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+
 }
