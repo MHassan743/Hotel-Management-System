@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>International Hotel Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal" style="display: flex;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Hotel Management System Login</h3>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" value="admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" value="admin123" required>
+                </div>
+                <div class="form-group">
+                    <label for="userType">Login As</label>
+                    <select id="userType" class="form-control">
+                        <option value="customer">Customer (View Only)</option>
+                        <option value="admin">Administrator (Full Access)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <div class="login-hint">
+                    <p><strong>Admin Access:</strong> Use username: admin, password: admin123</p>
+                    <p><strong>Customer Access:</strong> Use username: guest, password: guest123</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="hotel-brand">
+                    <i class="fas fa-hotel fa-2x"></i>
+                    <h2 id="hotelName">Grand International Hotel</h2>
+                </div>
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <nav class="sidebar-menu">
+                <ul>
+                    <li class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></li>
+                    <li data-section="rooms"><i class="fas fa-bed"></i> <span>Room Management</span></li>
+                    <li data-section="bookings"><i class="fas fa-calendar-check"></i> <span>Reservations</span></li>
+                    <li data-section="guests"><i class="fas fa-users"></i> <span>Guests</span></li>
+                    <li data-section="services"><i class="fas fa-concierge-bell"></i> <span>Services</span></li>
+                    <li data-section="reports"><i class="fas fa-chart-bar"></i> <span>Reports</span></li>
+                    <li data-section="settings"><i class="fas fa-cog"></i> <span>Settings</span></li>
+                    <li data-section="online-booking" id="onlineBookingNav"><i class="fas fa-globe"></i> <span>Online Booking</span></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <header class="header">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 id="pageTitle">Hotel Management Dashboard</h1>
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <a href="https://wa.me/+923038663629"><img src="Hassan.jpg" alt="User Avatar" class="Fimg" id="userAvatar"></a>
+                    </div>
+                    <span class="user-role" id="userRoleDisplay">Login</span>
+                    <button class="btn btn-sm btn-secondary" id="logoutBtn" style="display: none;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <!-- Dashboard Stats -->
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3 id="totalRooms">42</h3>
+                                <p>Total Rooms</p>
+                            </div>
+                            <div class="stat-icon blue">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3 id="occupiedRooms">36</h3>
+                                <p>Occupied Rooms</p>
+                            </div>
+                            <div class="stat-icon green">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3 id="availableRooms">6</h3>
+                                <p>Available Rooms</p>
+                            </div>
+                            <div class="stat-icon orange">
+                                <i class="fas fa-door-open"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <h3 id="occupancyRate">85%</h3>
+                                <p>Occupancy Rate</p>
+                            </div>
+                            <div class="stat-icon red">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Recent Bookings</h2>
+                        <button class="btn btn-primary admin-only" id="newBookingBtn" style="display: none;">
+                            <i class="fas fa-plus"></i> New Booking
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Guest Name</th>
+                                    <th>Room Type</th>
+                                    <th>Check-In</th>
+                                    <th>Check-Out</th>
+                                    <th>Status</th>
+                                    <th class="admin-only" style="display: none;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTable">
+                                <!-- Bookings populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Guest Management -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Guest Management</h2>
+                        <button class="btn btn-primary admin-only" id="addGuestBtn" style="display: none;">
+                            <i class="fas fa-user-plus"></i> Add Guest
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Guest ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Country</th>
+                                    <th class="admin-only" style="display: none;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guestsTable">
+                                <!-- Guests populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Room Management Section -->
+            <section id="rooms" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Room Management</h2>
+                        <button class="btn btn-primary admin-only" id="addRoomBtn" style="display: none;">
+                            <i class="fas fa-plus"></i> Add Room
+                        </button>
+                    </div>
+                    
+                    <div class="room-grid" id="roomsContainer">
+                        <!-- Room cards populated by JavaScript -->
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Room No</th>
+                                    <th>Type</th>
+                                    <th>Price/Night</th>
+                                    <th>Status</th>
+                                    <th>Amenities</th>
+                                    <th class="admin-only" style="display: none;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roomsTable">
+                                <!-- Rooms populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reservations Section -->
+            <section id="bookings" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Reservation Management</h2>
+                        <button class="btn btn-primary admin-only" id="newReservationBtn" style="display: none;">
+                            <i class="fas fa-plus"></i> New Reservation
+                        </button>
+                    </div>
+                    
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="totalBookings">24</h3>
+                                    <p>Total Bookings</p>
+                                </div>
+                                <div class="stat-icon blue">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="activeBookings">18</h3>
+                                    <p>Active Bookings</p>
+                                </div>
+                                <div class="stat-icon green">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="pendingBookings">3</h3>
+                                    <p>Pending Bookings</p>
+                                </div>
+                                <div class="stat-icon orange">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="cancelledBookings">3</h3>
+                                    <p>Cancelled Bookings</p>
+                                </div>
+                                <div class="stat-icon red">
+                                    <i class="fas fa-times-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Guest Name</th>
+                                    <th>Room No</th>
+                                    <th>Check-In</th>
+                                    <th>Check-Out</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th class="admin-only" style="display: none;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationsTable">
+                                <!-- Reservations populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Guests Section -->
+            <section id="guests" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Guest Management</h2>
+                        <button class="btn btn-primary admin-only" id="addNewGuestBtn" style="display: none;">
+                            <i class="fas fa-user-plus"></i> Add Guest
+                        </button>
+                    </div>
+                    
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="totalGuests">42</h3>
+                                    <p>Total Guests</p>
+                                </div>
+                                <div class="stat-icon blue">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="currentGuests">18</h3>
+                                    <p>Current Guests</p>
+                                </div>
+                                <div class="stat-icon green">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="vipGuests">5</h3>
+                                    <p>VIP Guests</p>
+                                </div>
+                                <div class="stat-icon orange">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="intlGuests">12</h3>
+                                    <p>International Guests</p>
+                                </div>
+                                <div class="stat-icon red">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Guest ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Country</th>
+                                    <th>VIP Status</th>
+                                    <th class="admin-only" style="display: none;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allGuestsTable">
+                                <!-- All guests populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section id="services" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Hotel Services</h2>
+                        <button class="btn btn-primary admin-only" id="addServiceBtn" style="display: none;">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
+                    
+                    <div class="service-grid" id="servicesContainer">
+                        <!-- Service cards populated by JavaScript -->
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Guest Name</th>
+                                    <th>Service Type</th>
+                                    <th>Room No</th>
+                                    <th>Request Time</th>
+                                    <th>Status</th>
+                                    <th class="admin-only" style="display: none;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="serviceRequestsTable">
+                                <!-- Service requests populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Hotel Reports & Analytics</h2>
+                        <button class="btn btn-primary admin-only" id="generateReportBtn" style="display: none;">
+                            <i class="fas fa-download"></i> Generate Report
+                        </button>
+                    </div>
+                    
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="monthlyRevenue">$42,580</h3>
+                                    <p>Monthly Revenue</p>
+                                </div>
+                                <div class="stat-icon blue">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="monthlyOccupancy">78%</h3>
+                                    <p>Occupancy Rate</p>
+                                </div>
+                                <div class="stat-icon green">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="guestRating">4.2/5</h3>
+                                    <p>Guest Rating</p>
+                                </div>
+                                <div class="stat-icon orange">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 id="servicesUsed">142</h3>
+                                    <p>Services Used</p>
+                                </div>
+                                <div class="stat-icon red">
+                                    <i class="fas fa-concierge-bell"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Revenue</th>
+                                    <th>Occupancy</th>
+                                    <th>New Guests</th>
+                                    <th>Services Revenue</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody id="performanceTable">
+                                <!-- Performance data populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>System Settings</h2>
+                    </div>
+                    <div class="settings-grid">
+                        <div class="settings-panel">
+                            <h3>General Settings</h3>
+                            <div class="setting-item">
+                                <span>Enable Email Notifications</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <span>Auto-checkout at 11 AM</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="autoCheckout" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <span>Allow Online Bookings</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="onlineBookings">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="settings-panel">
+                            <h3>Display Settings</h3>
+                            <div class="setting-item">
+                                <span>Dark Mode</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="darkMode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <span>Show Currency</span>
+                                <select id="currency" class="form-control">
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                    <option value="JPY">JPY (¥)</option>
+                                    <option value="INR">INR (₹)</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <span>Language</span>
+                                <select id="language" class="form-control">
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    <option value="hi">Hindi</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-header admin-only" style="display: none;">
+                        <h2>Database Management</h2>
+                    </div>
+                    <div class="settings-panel admin-only" style="display: none;">
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="backupBtn">
+                                <i class="fas fa-download"></i> Backup Database
+                            </button>
+                            <button class="btn btn-warning" id="clearDataBtn">
+                                <i class="fas fa-broom"></i> Clear Test Data
+                            </button>
+                            <button class="btn btn-danger" id="resetBtn">
+                                <i class="fas fa-trash-alt"></i> Reset All Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Online Booking Section -->
+            <section id="online-booking" class="content-section">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Online Room Booking</h2>
+                    </div>
+                    
+                    <div class="booking-layout">
+                        <div class="booking-form">
+                            <h3>Book Your Stay</h3>
+                            <form id="onlineBookingForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="onlineFirstName">First Name</label>
+                                        <input type="text" id="onlineFirstName" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="onlineLastName">Last Name</label>
+                                        <input type="text" id="onlineLastName" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="onlineEmail">Email</label>
+                                        <input type="email" id="onlineEmail" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="onlinePhone">Phone</label>
+                                        <input type="tel" id="onlinePhone" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="onlineCheckIn">Check-In Date</label>
+                                        <input type="date" id="onlineCheckIn" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="onlineCheckOut">Check-Out Date</label>
+                                        <input type="date" id="onlineCheckOut" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="onlineRoomType">Room Type</label>
+                                    <select id="onlineRoomType" class="form-control" required>
+                                        <option value="">Select Room Type</option>
+                                        <option value="Single Room">Single Room</option>
+                                        <option value="Double Room">Double Room</option>
+                                        <option value="Deluxe Room">Deluxe Room</option>
+                                        <option value="Suite">Suite</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="onlineGuests">Number of Guests</label>
+                                    <select id="onlineGuests" class="form-control" required>
+                                        <option value="1">1 Guest</option>
+                                        <option value="2">2 Guests</option>
+                                        <option value="3">3 Guests</option>
+                                        <option value="4">4 Guests</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="onlineSpecialRequests">Special Requests</label>
+                                    <textarea id="onlineSpecialRequests" class="form-control" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block admin-only" style="display: none;">Book Now</button>
+                                <div class="customer-view" id="customerBookingMessage">
+                                    <p class="text-muted">For booking, please contact hotel administration or visit the front desk.</p>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="available-rooms">
+                            <h3>Available Rooms</h3>
+                            <div class="room-grid" id="onlineRoomsContainer">
+                                <!-- Available rooms for online booking populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>New Booking</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="bookingForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="guestName">Guest Name</label>
+                        <input type="text" id="guestName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="guestEmail">Email</label>
+                        <input type="email" id="guestEmail" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="roomType">Room Type</label>
+                        <select id="roomType" class="form-control" required>
+                            <option value="">Select Room Type</option>
+                            <option value="Single Room">Single Room</option>
+                            <option value="Double Room">Double Room</option>
+                            <option value="Deluxe Room">Deluxe Room</option>
+                            <option value="Suite">Suite</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomNumber">Room Number</label>
+                        <input type="text" id="roomNumber" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="checkIn">Check-In Date</label>
+                        <input type="date" id="checkIn" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkOut">Check-Out Date</label>
+                        <input type="date" id="checkOut" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="specialRequests">Special Requests</label>
+                    <textarea id="specialRequests" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="guestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Guest</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="guestForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passport">Passport Number</label>
+                        <input type="text" id="passport" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Add Guest</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully!</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
